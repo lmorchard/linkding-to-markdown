@@ -121,9 +121,22 @@ func runFetch(cmd *cobra.Command, args []string) error {
 	// Fetch bookmarks
 	query := viper.GetString("fetch.query")
 	logger.Infof("Fetching bookmarks since %s", addedSince.Format("2006-01-02"))
-	bookmarks, err := client.FetchAllBookmarks(query, addedSince, addedUntil)
+	bookmarks, err := client.FetchAllBookmarks(query, addedSince, time.Time{})
 	if err != nil {
 		return fmt.Errorf("failed to fetch bookmarks: %w", err)
+	}
+
+	// Filter bookmarks by addedUntil if specified (client-side filtering)
+	if !addedUntil.IsZero() {
+		var filtered []linkding.Bookmark
+		for _, bookmark := range bookmarks {
+			// Include bookmarks added before or on the until date (end of day)
+			if bookmark.DateAdded.Before(addedUntil.AddDate(0, 0, 1)) {
+				filtered = append(filtered, bookmark)
+			}
+		}
+		logger.Infof("Filtered %d bookmarks to %d within date range", len(bookmarks), len(filtered))
+		bookmarks = filtered
 	}
 
 	logger.Infof("Fetched %d bookmarks", len(bookmarks))
