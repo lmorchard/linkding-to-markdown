@@ -1,9 +1,6 @@
 # Configuration file for linkding-to-markdown
 # Copy this to linkding-to-markdown.yaml and customize as needed
 
-# Database configuration (optional, currently not used)
-database: "linkding-to-markdown.db"
-
 # Logging configuration
 verbose: false
 debug: false

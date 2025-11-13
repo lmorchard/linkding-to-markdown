@@ -6,10 +6,6 @@ COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_DATE := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LDFLAGS := -X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)
 
-# Note: Static linking is not used because SQLite requires CGO, which links dynamically
-# to system libraries. Attempting static linking causes getaddrinfo warnings and
-# potential runtime compatibility issues.
-
 # Default target
 all: build
 
@@ -23,7 +19,7 @@ setup:
 # Build the application
 build:
 	@echo "Building linkding-to-markdown..."
-	@CGO_ENABLED=1 go build -ldflags "$(LDFLAGS)" -o linkding-to-markdown .
+	@go build -ldflags "$(LDFLAGS)" -o linkding-to-markdown .
 	@echo "✅ Built: linkding-to-markdown"
 
 # Run the application

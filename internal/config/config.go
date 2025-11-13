@@ -5,10 +5,9 @@ import "time"
 // Config holds application configuration
 type Config struct {
 	// Core settings
-	Database string
-	Verbose  bool
-	Debug    bool
-	LogJSON  bool
+	Verbose bool
+	Debug   bool
+	LogJSON bool
 
 	// Linkding settings
 	Linkding struct {
