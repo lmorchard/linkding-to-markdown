@@ -1,0 +1,46 @@
+# Configuration file for linkding-to-markdown
+# Copy this to linkding-to-markdown.yaml and customize as needed
+
+# Database configuration (optional, currently not used)
+database: "linkding-to-markdown.db"
+
+# Logging configuration
+verbose: false
+debug: false
+log_json: false
+
+# Linkding instance configuration
+linkding:
+  # URL of your Linkding instance
+  url: "https://linkding.example.com"
+
+  # API token (generate in Linkding settings)
+  # You can also set this via environment variable: LINKDING_TO_MARKDOWN_LINKDING_TOKEN
+  token: "your-api-token-here"
+
+  # HTTP request timeout
+  timeout: 30s
+
+# Fetch command configuration
+fetch:
+  # Number of days to fetch (from now, default: 7)
+  days: 7
+
+  # Or specify explicit date range (YYYY-MM-DD format)
+  # since: "2025-01-01"
+  # until: "2025-01-31"
+
+  # Search query to filter bookmarks
+  # query: "golang"
+
+  # Output file (leave empty for stdout)
+  # output: "bookmarks.md"
+
+  # Document title
+  title: "Bookmarks"
+
+  # Output options
+  no_notes: false
+  no_tags: false
+  no_group_by_date: false
+  date_format: "2006-01-02"
