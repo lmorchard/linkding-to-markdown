@@ -59,6 +59,33 @@ func NewClient(baseURL, token string, timeout time.Duration) (*Client, error) {
 	}, nil
 }
 
+// ValidateAuth hits a minimal authenticated endpoint to check whether
+// the configured token is accepted. Returns nil on success; an error
+// on 401/403, network failure, or other API-level problems.
+func (c *Client) ValidateAuth() error {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/bookmarks/?limit=1", c.BaseURL), nil)
+	if err != nil {
+		return fmt.Errorf("build request: %w", err)
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", c.Token))
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("request: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		return fmt.Errorf("linkding rejected the token (%s)", resp.Status)
+	}
+	if resp.StatusCode >= 400 {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API status %d: %s", resp.StatusCode, string(body))
+	}
+	return nil
+}
+
 // FetchBookmarks retrieves bookmarks from Linkding with optional filters
 func (c *Client) FetchBookmarks(query string, addedSince, modifiedSince time.Time, limit, offset int) ([]Bookmark, error) {
 	params := url.Values{}
