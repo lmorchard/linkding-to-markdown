@@ -57,9 +57,9 @@ func init() {
 	fetchCmd.Flags().String("template", "", "Custom template file (default: built-in template)")
 
 	// Bind flags to viper
-	_ = viper.BindPFlag("linkding.url", fetchCmd.Flags().Lookup("url"))
-	_ = viper.BindPFlag("linkding.token", fetchCmd.Flags().Lookup("token"))
-	_ = viper.BindPFlag("linkding.timeout", fetchCmd.Flags().Lookup("timeout"))
+	_ = viper.BindPFlag("url", fetchCmd.Flags().Lookup("url"))
+	_ = viper.BindPFlag("token", fetchCmd.Flags().Lookup("token"))
+	_ = viper.BindPFlag("timeout", fetchCmd.Flags().Lookup("timeout"))
 	_ = viper.BindPFlag("fetch.days", fetchCmd.Flags().Lookup("days"))
 	_ = viper.BindPFlag("fetch.since", fetchCmd.Flags().Lookup("since"))
 	_ = viper.BindPFlag("fetch.until", fetchCmd.Flags().Lookup("until"))
@@ -116,9 +116,9 @@ func runFetchPipeline(addedSince, addedUntil time.Time, outputPath string) error
 	logger := GetLogger()
 
 	// Get Linkding connection settings
-	linkdingURL := viper.GetString("linkding.url")
-	linkdingToken := viper.GetString("linkding.token")
-	timeout := viper.GetDuration("linkding.timeout")
+	linkdingURL := viper.GetString("url")
+	linkdingToken := viper.GetString("token")
+	timeout := viper.GetDuration("timeout")
 
 	if linkdingURL == "" {
 		return fmt.Errorf("Linkding URL is required (--url or config file)")

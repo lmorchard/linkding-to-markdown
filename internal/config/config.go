@@ -1,32 +1,10 @@
 package config
 
-import "time"
-
-// Config holds application configuration
+// Config holds application configuration. Most settings are read straight
+// from viper at the call site; only the cross-cutting logging flags live on
+// this struct.
 type Config struct {
-	// Core settings
 	Verbose bool
 	Debug   bool
 	LogJSON bool
-
-	// Linkding settings
-	Linkding struct {
-		URL     string
-		Token   string
-		Timeout time.Duration
-	}
-
-	// Fetch command settings
-	Fetch struct {
-		Days          int
-		Since         string
-		Until         string
-		Query         string
-		Output        string
-		Title         string
-		NoNotes       bool
-		NoTags        bool
-		NoGroupByDate bool
-		DateFormat    string
-	}
 }

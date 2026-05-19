@@ -16,17 +16,14 @@ verbose: false
 debug: false
 log_json: false
 
-# Linkding instance configuration
-linkding:
-  # URL of your Linkding instance (required)
-  url: "https://linkding.example.com"
+# Linkding instance URL (required) — env: LINKDING_URL
+url: "https://linkding.example.com"
 
-  # API token (generate in Linkding settings)
-  # You can also set this via environment variable: LINKDING_TO_MARKDOWN_LINKDING_TOKEN
-  token: "your-api-token-here"
+# API token (generate in Linkding settings) — env: LINKDING_TOKEN
+token: "your-api-token-here"
 
-  # HTTP request timeout
-  timeout: 30s
+# HTTP request timeout — env: LINKDING_TIMEOUT
+timeout: 30s
 
 # Fetch command configuration
 fetch:

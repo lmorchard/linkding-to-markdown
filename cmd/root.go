@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/lmorchard/linkding-to-markdown/internal/config"
 	"github.com/sirupsen/logrus"
@@ -71,7 +72,11 @@ func initConfig() {
 	viper.SetDefault("debug", false)
 	viper.SetDefault("log_json", false)
 
-	// Read in environment variables that match
+	// Read in environment variables that match. Every config key is reachable
+	// via LINKDING_<KEY>, with `.` in nested keys becoming `_`
+	// (e.g. fetch.since -> LINKDING_FETCH_SINCE).
+	viper.SetEnvPrefix("LINKDING")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
 	// If a config file is found, read it in

@@ -52,7 +52,7 @@ linkding-to-markdown fetch --output bookmarks.md
 You can configure the tool using either:
 
 1. A YAML configuration file (default: `linkding-to-markdown.yaml`)
-2. Environment variables (prefixed with `LINKDING_TO_MARKDOWN_`)
+2. Environment variables (prefixed with `LINKDING_`)
 3. Command-line flags (highest precedence)
 
 ### Initialize Configuration
@@ -90,10 +90,9 @@ cp linkding-to-markdown.yaml.example linkding-to-markdown.yaml
 Edit the file with your Linkding instance details:
 
 ```yaml
-linkding:
-  url: "https://your-linkding-instance.com"
-  token: "your-api-token"
-  timeout: 30s
+url: "https://your-linkding-instance.com"
+token: "your-api-token"
+timeout: 30s
 
 fetch:
   days: 7
@@ -103,9 +102,12 @@ fetch:
 
 ### Environment Variables
 
+Every config key is reachable via an environment variable with the `LINKDING_` prefix. Nested keys use `_` as the separator:
+
 ```bash
-export LINKDING_TO_MARKDOWN_LINKDING_URL="https://your-linkding-instance.com"
-export LINKDING_TO_MARKDOWN_LINKDING_TOKEN="your-api-token"
+export LINKDING_URL="https://your-linkding-instance.com"
+export LINKDING_TOKEN="your-api-token"
+export LINKDING_FETCH_DAYS="14"
 ```
 
 ## Usage
