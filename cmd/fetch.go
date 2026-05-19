@@ -121,10 +121,10 @@ func runFetchPipeline(addedSince, addedUntil time.Time, outputPath string) error
 	timeout := viper.GetDuration("timeout")
 
 	if linkdingURL == "" {
-		return fmt.Errorf("Linkding URL is required (--url or config file)")
+		return fmt.Errorf("linkding URL is required (--url or config file)")
 	}
 	if linkdingToken == "" {
-		return fmt.Errorf("Linkding API token is required (--token or config file)")
+		return fmt.Errorf("linkding API token is required (--token or config file)")
 	}
 
 	// Create Linkding client
