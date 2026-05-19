@@ -110,6 +110,22 @@ export LINKDING_TO_MARKDOWN_LINKDING_TOKEN="your-api-token"
 
 ## Usage
 
+### Orchestrator-friendly `export` subcommand
+
+Same pipeline as `fetch`, with the canonical `--since/--until/-o` flag shape
+used by [`me-to-markdown`](https://github.com/lmorchard/me-to-markdown) and
+the rest of the `*-to-markdown` family. Filter, title, and template options
+come from the config file rather than CLI flags.
+
+```bash
+linkding-to-markdown export --since 168h
+linkding-to-markdown export --since 2026-05-11 --until 2026-05-18 -o bookmarks.md
+```
+
+`--since` accepts a Go duration (`168h`) or a `YYYY-MM-DD` date and is
+required. `--until` accepts `YYYY-MM-DD` and is treated as end-of-day
+inclusive.
+
 ### Basic Usage
 
 Fetch bookmarks from the last 7 days:

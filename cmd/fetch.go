@@ -74,6 +74,45 @@ func init() {
 }
 
 func runFetch(cmd *cobra.Command, args []string) error {
+	// Parse legacy time range flags (since/until/days).
+	var addedSince, addedUntil time.Time
+	var err error
+
+	sinceStr := viper.GetString("fetch.since")
+	untilStr := viper.GetString("fetch.until")
+	days := viper.GetInt("fetch.days")
+
+	if sinceStr != "" {
+		addedSince, err = time.Parse("2006-01-02", sinceStr)
+		if err != nil {
+			return fmt.Errorf("invalid --since date format (use YYYY-MM-DD): %w", err)
+		}
+	} else if days > 0 {
+		addedSince = time.Now().AddDate(0, 0, -days)
+	}
+
+	if untilStr != "" {
+		addedUntil, err = time.Parse("2006-01-02", untilStr)
+		if err != nil {
+			return fmt.Errorf("invalid --until date format (use YYYY-MM-DD): %w", err)
+		}
+		// Make addedUntil inclusive end-of-day so YYYY-MM-DD captures the
+		// entire stated day. Matches the existing user-visible behavior.
+		addedUntil = addedUntil.Add(24*time.Hour - time.Nanosecond)
+	}
+
+	outputPath := viper.GetString("fetch.output")
+	return runFetchPipeline(addedSince, addedUntil, outputPath)
+}
+
+// runFetchPipeline executes the Linkding fetch + markdown render flow for the
+// given window. addedSince filters bookmarks added on/after; addedUntil is an
+// inclusive cap (zero time = no upper bound). outputPath is the file to write
+// (empty = stdout). All other settings (URL/token, filters, template) are
+// read from viper.
+//
+// Used by both fetchCmd and exportCmd.
+func runFetchPipeline(addedSince, addedUntil time.Time, outputPath string) error {
 	logger := GetLogger()
 
 	// Get Linkding connection settings
@@ -95,29 +134,6 @@ func runFetch(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to create Linkding client: %w", err)
 	}
 
-	// Parse time range
-	var addedSince, addedUntil time.Time
-
-	sinceStr := viper.GetString("fetch.since")
-	untilStr := viper.GetString("fetch.until")
-	days := viper.GetInt("fetch.days")
-
-	if sinceStr != "" {
-		addedSince, err = time.Parse("2006-01-02", sinceStr)
-		if err != nil {
-			return fmt.Errorf("invalid --since date format (use YYYY-MM-DD): %w", err)
-		}
-	} else if days > 0 {
-		addedSince = time.Now().AddDate(0, 0, -days)
-	}
-
-	if untilStr != "" {
-		addedUntil, err = time.Parse("2006-01-02", untilStr)
-		if err != nil {
-			return fmt.Errorf("invalid --until date format (use YYYY-MM-DD): %w", err)
-		}
-	}
-
 	// Fetch bookmarks
 	query := viper.GetString("fetch.query")
 	logger.Infof("Fetching bookmarks since %s", addedSince.Format("2006-01-02"))
@@ -126,12 +142,12 @@ func runFetch(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to fetch bookmarks: %w", err)
 	}
 
-	// Filter bookmarks by addedUntil if specified (client-side filtering)
+	// Filter bookmarks by addedUntil if specified (client-side filtering).
+	// addedUntil is expected to be the inclusive end-of-day value already.
 	if !addedUntil.IsZero() {
 		var filtered []linkding.Bookmark
 		for _, bookmark := range bookmarks {
-			// Include bookmarks added before or on the until date (end of day)
-			if bookmark.DateAdded.Before(addedUntil.AddDate(0, 0, 1)) {
+			if !bookmark.DateAdded.After(addedUntil) {
 				filtered = append(filtered, bookmark)
 			}
 		}
@@ -164,15 +180,14 @@ func runFetch(cmd *cobra.Command, args []string) error {
 
 	// Prepare generation options
 	opts := markdown.Options{
-		Title:          viper.GetString("fetch.title"),
-		IncludeNotes:   !viper.GetBool("fetch.no_notes"),
-		IncludeTags:    !viper.GetBool("fetch.no_tags"),
-		GroupByDate:    !viper.GetBool("fetch.no_group_by_date"),
-		DateFormat:     viper.GetString("fetch.date_format"),
+		Title:        viper.GetString("fetch.title"),
+		IncludeNotes: !viper.GetBool("fetch.no_notes"),
+		IncludeTags:  !viper.GetBool("fetch.no_tags"),
+		GroupByDate:  !viper.GetBool("fetch.no_group_by_date"),
+		DateFormat:   viper.GetString("fetch.date_format"),
 	}
 
 	// Determine output destination
-	outputPath := viper.GetString("fetch.output")
 	var output *os.File
 	if outputPath != "" {
 		output, err = os.Create(outputPath)
