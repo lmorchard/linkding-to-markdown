@@ -359,4 +359,8 @@ MIT License - see LICENSE file for details
 
 - [Linkding](https://github.com/sissbruecker/linkding) - Self-hosted bookmark manager
 - [mastodon-to-markdown](https://github.com/lmorchard/mastodon-to-markdown) - Similar tool for Mastodon
+- [github-to-markdown](https://github.com/lmorchard/github-to-markdown) - Similar tool for GitHub activity
+- [spotify-to-markdown](https://github.com/lmorchard/spotify-to-markdown) - Similar tool for Spotify listening history
+- [youtube-to-markdown](https://github.com/lmorchard/youtube-to-markdown) - Similar tool for YouTube liked videos
+- [pocketcasts-to-markdown](https://github.com/lmorchard/pocketcasts-to-markdown) - Similar tool for Pocket Casts listening history
 - [linkding-to-opml](https://github.com/lmorchard/linkding-to-opml) - Export Linkding bookmarks to OPML
